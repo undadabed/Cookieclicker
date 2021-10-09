@@ -4,10 +4,14 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.Timer;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GridLayout;
 
 public class CookieFrame extends JFrame implements ActionListener {
 
@@ -15,13 +19,14 @@ public class CookieFrame extends JFrame implements ActionListener {
     JButton cur,gra,far,min,fac,ban,tem,wiz,shi,alc,por,tim,ant,pri,cha,fra,jav,idl;
     Producer cursor, grandma, farm, mine, factory, bank, temple, wizardTower, shipment, alchemyLab, portal, timeMachine, antimatterCondenser, prism, chancemaker, fractalEngine, javascriptConsole, idleverse;
     double totalcookies, production, click;
-    JLabel cookiecount;
+    JLabel cookiecount, CPS;
     double cookiedisplay;
     int power;
+    Timer timer;
 
     CookieFrame() {
         totalcookies = 0;
-        production = 0;
+        production = 200;
         click = 1;
         cookiedisplay = 0;
         power = 0;
@@ -48,7 +53,8 @@ public class CookieFrame extends JFrame implements ActionListener {
 
         this.setTitle("Cookieclicker"); //sets the title of the frame
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //exit the application when the frame is closed
-        this.setSize(1280,720); //sets the x and y dimensions of the frame
+        this.setLayout(null);
+        this.setSize(1920,1080); //sets the x and y dimensions of the frame
         this.setVisible(true); //makes the frame visible
 
         ImageIcon icon = new ImageIcon("src/Images/cookieclicker.png"); //create new imageicon
@@ -57,17 +63,55 @@ public class CookieFrame extends JFrame implements ActionListener {
 
         //Make cookie panel
         JPanel cookiepanel = new JPanel();
-        cookiepanel.setBorder(BorderFactory.createEmptyBorder(0,0,400,720));
-        cookiecount = new JLabel("Cookies: 0");
+        cookiepanel.setBounds(100,400,300,1080);
+        cookiepanel.setBackground(Color.white);
+
+        //Make panel for cookiecount
+        JPanel counter = new JPanel();
+        counter.setBounds(100,100,300,100);
+        counter.setBackground(Color.white);
+        counter.setLayout(new GridLayout(2,1));
+
+        //Make cookie counter
+        cookiecount = new JLabel("Cookies: 0", SwingConstants.CENTER);
         cookiecount.setFont(new Font("Roboto", Font.BOLD, 36));
-        cookiepanel.add(cookiecount);
+        counter.add(cookiecount);
+        CPS = new JLabel("per second: 0", SwingConstants.CENTER);
+        counter.add(CPS);
 
         //Make clickable cookie
-        cookie = new JButton(new ImageIcon("src/Images/clickcookie.png"));
-        cookie.addActionListener(this);
+        cookie = new JButton();
+        cookie.setFocusPainted(false);
+        cookie.setBorder(null);
+        cookie.setBackground(Color.white);
+        cookie.setIcon(new ImageIcon("src/Images/clickcookie.png"));
         cookiepanel.add(cookie);
+        cookie.addActionListener(this);
+
+        //Buttons for upgrades
+        cur = new JButton();
+        cur.setBounds(1520,0,200,100);
+        cur.setText("Cursor! Purchase cost: " + cursor.levelupcost());
+        this.add(cur);
+        cur.addActionListener(this);
+
+
+        //Add everything to the frame
         this.add(cookiepanel);
+        this.add(counter);
         this.revalidate();
+        setTimer();
+        timer.start();
+    }
+
+    public void setTimer() {
+        timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                    totalcookies += production;
+                    cookiecount.setText("Cookies: " +totalcookies);
+            }
+        });
     }
 
     @Override
@@ -79,6 +123,8 @@ public class CookieFrame extends JFrame implements ActionListener {
             if (totalcookies >= cursor.levelupcost()) {
                 totalcookies -= cursor.levelupcost();
                 production += cursor.levelup();
+                CPS.setText("per second: " + production);
+                cur.setText("Cursor! Level up cost: " + cursor.levelupcost());
             }
         }
         else if (e.getSource() == gra) {
