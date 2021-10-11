@@ -4,11 +4,14 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
@@ -18,18 +21,20 @@ public class CookieFrame extends JFrame implements ActionListener {
     JButton cookie;
     JButton cur,gra,far,min,fac,ban,tem,wiz,shi,alc,por,tim,ant,pri,cha,fra,jav,idl;
     Producer cursor, grandma, farm, mine, factory, bank, temple, wizardTower, shipment, alchemyLab, portal, timeMachine, antimatterCondenser, prism, chancemaker, fractalEngine, javascriptConsole, idleverse;
-    double totalcookies, production, click;
+    double totalcookies, production, click, displaycookies;
+    int transfer;
     JLabel cookiecount, CPS;
-    double cookiedisplay;
     int power;
     Timer timer;
+    String thousands;
 
     CookieFrame() {
-        totalcookies = 0;
-        production = 200;
+        totalcookies = 10000;
+        production = 10000;
         click = 1;
-        cookiedisplay = 0;
         power = 0;
+        transfer = 0;
+        displaycookies = 0;
 
         cursor = new Producer(0.1,15.0);
         grandma = new Producer(1.0,100.0);
@@ -63,12 +68,12 @@ public class CookieFrame extends JFrame implements ActionListener {
 
         //Make cookie panel
         JPanel cookiepanel = new JPanel();
-        cookiepanel.setBounds(100,400,300,1080);
+        cookiepanel.setBounds(100,400,600,1080);
         cookiepanel.setBackground(Color.white);
 
         //Make panel for cookiecount
         JPanel counter = new JPanel();
-        counter.setBounds(100,100,300,100);
+        counter.setBounds(100,100,600,100);
         counter.setBackground(Color.white);
         counter.setLayout(new GridLayout(2,1));
 
@@ -90,11 +95,64 @@ public class CookieFrame extends JFrame implements ActionListener {
 
         //Buttons for upgrades
         cur = new JButton();
-        cur.setBounds(1520,0,200,100);
-        cur.setText("Cursor! Purchase cost: " + cursor.levelupcost());
+        cur.setBounds(1620,0,300,50);
+        cur.setText("Cursor: " + cursor.display());
         this.add(cur);
         cur.addActionListener(this);
+        
+        gra = new JButton();
+        gra.setBounds(1620,50,300,50);
+        gra.setText("Grandma: " + grandma.display());
+        this.add(gra);
+        gra.addActionListener(this);
+        
+        far = new JButton();
+        far.setBounds(1620,100,300,50);
+        far.setText("Farm: " + farm.display());
+        this.add(far);
+        far.addActionListener(this);
+        
+        min = new JButton();
+        min.setBounds(1620,150,300,50);
+        min.setText("Mine: " + mine.display());
+        this.add(min);
+        min.addActionListener(this);
 
+        fac = new JButton();
+        fac.setBounds(1620,200,300,50);
+        fac.setText("Factory: " + factory.display());
+        this.add(fac);
+        fac.addActionListener(this);
+
+        ban = new JButton();
+        ban.setBounds(1620,250,300,50);
+        ban.setText("Bank: " + bank.display());
+        this.add(ban);
+        ban.addActionListener(this);
+
+        tem = new JButton();
+        tem.setBounds(1620,300,300,50);
+        tem.setText("Temple: " + temple.display());
+        this.add(tem);
+        tem.addActionListener(this);
+
+        wiz = new JButton();
+        wiz.setBounds(1620,350,300,50);
+        wiz.setText("Wizard Tower: " + wizardTower.display());
+        this.add(wiz);
+        wiz.addActionListener(this);
+
+        shi = new JButton();
+        shi.setBounds(1620,400,300,50);
+        shi.setText("Shipment: " + shipment.display());
+        this.add(shi);
+        shi.addActionListener(this);
+
+        alc = new JButton();
+        alc.setBounds(1620,450,300,50);
+        alc.setText("Alchemy Lab: " + alchemyLab.display());
+        this.add(alc);
+        alc.addActionListener(this);
 
         //Add everything to the frame
         this.add(cookiepanel);
@@ -104,47 +162,140 @@ public class CookieFrame extends JFrame implements ActionListener {
         timer.start();
     }
 
+    public static double round(double value) {
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(3, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
     public void setTimer() {
         timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                     totalcookies += production;
-                    cookiecount.setText("Cookies: " +totalcookies);
+                    displaycookies = round(totalcookies/Math.pow(1000,transfer));
+                    if (displaycookies > 100000) {
+                        displaycookies = displaycookies/1000;
+                        transfer++;
+                    }
+                    else if (displaycookies < 1) {
+                        displaycookies = displaycookies * 1000;
+                        transfer--;
+                    }
+                    cookiecount.setText("Cookies: " + displaycookies + " " + bignum(transfer));
             }
         });
+    }
+
+    public String bignum(int x) {
+        if (x == 0) {
+            return "";
+        }
+        if (x == 1) {
+            return "thousand";
+        }
+        if (x == 2) {
+            return "million";
+        }
+        if (x == 3) {
+            return "billion";
+        }
+        if (x == 4) {
+            return "trillion";
+        }
+        if (x == 5) {
+            return "quadrillion";
+        }
+        if (x == 6) {
+            return "quintillion";
+        }
+        if (x == 7) {
+            return "sextillion";
+        }
+        if (x == 8) {
+            return "septillion";
+        }
+        if (x == 9) {
+            return "octillion";
+        }
+        if (x == 10) {
+            return "nonillion";
+        }
+        if (x == 11) {
+            return "decillion";
+        }
+        if (x == 12) {
+            return "undecillion";
+        }
+        if (x == 13) {
+            return "duodecillion";
+        }
+        if (x == 14) {
+            return "tresdecllion";
+        }
+        if (x == 15) {
+            return "quattuordecillion";
+        }
+        if (x == 16) {
+            return "quindecillion";
+        }
+        if (x == 17) {
+            return "sexdecillion";
+        }
+        if (x == 18) {
+            return "septendecillion";
+        }
+        if (x == 19) {
+            return "octodecillion";
+        }
+        if (x == 20) {
+            return "novemdecillion";
+        }
+        if (x == 21) {
+            return "vigintillion";
+        }
+        return "error";
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == cookie) {
             totalcookies += click;
+            displaycookies = totalcookies/Math.pow(1000,transfer);
         }
         else if (e.getSource() == cur) {
             if (totalcookies >= cursor.levelupcost()) {
                 totalcookies -= cursor.levelupcost();
                 production += cursor.levelup();
-                CPS.setText("per second: " + production);
-                cur.setText("Cursor! Level up cost: " + cursor.levelupcost());
+                CPS.setText("per second: " + round(production));
+                cur.setText("Cursor! Level up cost: " + cursor.display());
             }
         }
         else if (e.getSource() == gra) {
             if (totalcookies >= grandma.levelupcost()) {
                 totalcookies -= grandma.levelupcost();
                 production += grandma.levelup();
+                CPS.setText("per second: " + round(production));
+                gra.setText("Grandma! Level up cost: " + grandma.display());
             }
         }
         else if (e.getSource() == far) {
             if (totalcookies >= farm.levelupcost()) {
                 totalcookies -= farm.levelupcost();
                 production += farm.levelup();
+                CPS.setText("per second: " + round(production));
+                far.setText("Farm! Level up cost: " + farm.display());
             }
         }
-        else if (e.getSource() == mine) {
+        else if (e.getSource() == min) {
             if (totalcookies >= mine.levelupcost()) {
                 totalcookies -= mine.levelupcost();
                 production += mine.levelup();
+                CPS.setText("per second: " + round(production));
+                min.setText("Mine! Level up cost: " + mine.display());
             }
         }
-        cookiecount.setText("Cookies: " + totalcookies);
+        displaycookies = round(totalcookies/Math.pow(1000,transfer));
+        cookiecount.setText("Cookies: " + displaycookies + " " + bignum(transfer));
     }
 }
